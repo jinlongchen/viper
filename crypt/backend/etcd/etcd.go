@@ -94,10 +94,9 @@ func (c *Client) WatchWithContext(ctx context.Context, key string, stop chan boo
 			for _, event := range watchResp.Events {
 				switch event.Type {
 				case mvccpb.PUT:
-					fmt.Println("修改为：", string(event.Kv.Value), "Revision:", event.Kv.CreateRevision, event.Kv.ModRevision)
 					respChan <- &backend.Response{Value: event.Kv.Value, Error: nil}
 				case mvccpb.DELETE:
-					fmt.Println("删除了", "Revision:", event.Kv.ModRevision)
+					respChan <- &backend.Response{Value: event.Kv.Value, Error: nil}
 				}
 			}
 		}

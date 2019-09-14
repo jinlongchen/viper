@@ -205,6 +205,8 @@ type Viper struct {
 	properties *properties.Properties
 
 	onConfigChange func(fsnotify.Event)
+
+	quitList []chan bool
 }
 
 // New returns an initialized Viper instance.
@@ -222,7 +224,7 @@ func New() *Viper {
 	v.env = make(map[string]string)
 	v.aliases = make(map[string]string)
 	v.typeByDefValue = false
-
+	v.quitList = make([]chan bool, 0)
 	return v
 }
 
@@ -1672,15 +1674,22 @@ func (v *Viper) getRemoteConfig(provider RemoteProvider) (map[string]interface{}
 // Retrieve the first found remote configuration.
 func (v *Viper) watchKeyValueConfigOnChannel() error {
 	for _, rp := range v.remoteProviders {
-		respc, _ := RemoteConfig.WatchChannel(rp)
+		respc, quit := RemoteConfig.WatchChannel(rp)
 		//Todo: Add quit channel
 		go func(rc <-chan *RemoteResponse) {
 			for {
 				b := <-rc
 				reader := bytes.NewReader(b.Value)
-				v.unmarshalReader(reader, v.kvstore)
+				err := v.unmarshalReader(reader, v.kvstore)
+				if err != nil {
+					println(err.Error())
+				}
+				if b.Error == nil && v.onConfigChange != nil {
+					v.onConfigChange(fsnotify.Event{})
+				}
 			}
 		}(respc)
+		v.quitList = append(v.quitList, quit)
 		return nil
 	}
 	return RemoteConfigError("No Files Found")
@@ -1858,7 +1867,16 @@ func SetConfigPermissions(perm os.FileMode) { v.SetConfigPermissions(perm) }
 func (v *Viper) SetConfigPermissions(perm os.FileMode) {
 	v.configPermissions = perm.Perm()
 }
-
+func (v* Viper) Exit() {
+	defer func() {
+		if e := recover(); e != nil {
+			log.Printf("close quit err: %v\n", e)
+		}
+	}()
+	for _, quit := range v.quitList {
+		quit <- true
+	}
+}
 func (v *Viper) getConfigType() string {
 	if v.configType != "" {
 		return v.configType
