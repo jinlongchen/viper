@@ -1,23 +1,21 @@
-// Copyright © 2015 Steve Francia <spf@spf13.com>.
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file.
+/*
+ * Copyright (c) 2019. 陈金龙.
+ */
 
 // Package remote integrates the remote features of Viper.
-package remote
+package viper
 
 import (
 	"bytes"
 	"io"
 	"os"
 
-	"github.com/jinlongchen/viper"
 	crypt "github.com/xordataexchange/crypt/config"
 )
 
 type remoteConfigProvider struct{}
 
-func (rc remoteConfigProvider) Get(rp viper.RemoteProvider) (io.Reader, error) {
+func (rc remoteConfigProvider) Get(rp RemoteProvider) (io.Reader, error) {
 	cm, err := getConfigManager(rp)
 	if err != nil {
 		return nil, err
@@ -29,7 +27,7 @@ func (rc remoteConfigProvider) Get(rp viper.RemoteProvider) (io.Reader, error) {
 	return bytes.NewReader(b), nil
 }
 
-func (rc remoteConfigProvider) Watch(rp viper.RemoteProvider) (io.Reader, error) {
+func (rc remoteConfigProvider) Watch(rp RemoteProvider) (io.Reader, error) {
 	cm, err := getConfigManager(rp)
 	if err != nil {
 		return nil, err
@@ -42,24 +40,24 @@ func (rc remoteConfigProvider) Watch(rp viper.RemoteProvider) (io.Reader, error)
 	return bytes.NewReader(resp), nil
 }
 
-func (rc remoteConfigProvider) WatchChannel(rp viper.RemoteProvider) (<-chan *viper.RemoteResponse, chan bool) {
+func (rc remoteConfigProvider) WatchChannel(rp RemoteProvider) (<-chan *RemoteResponse, chan bool) {
 	cm, err := getConfigManager(rp)
 	if err != nil {
 		return nil, nil
 	}
 	quit := make(chan bool)
 	quitwc := make(chan bool)
-	viperResponsCh := make(chan *viper.RemoteResponse)
+	viperResponsCh := make(chan *RemoteResponse)
 	cryptoResponseCh := cm.Watch(rp.Path(), quit)
-	// need this function to convert the Channel response form crypt.Response to viper.Response
-	go func(cr <-chan *crypt.Response, vr chan<- *viper.RemoteResponse, quitwc <-chan bool, quit chan<- bool) {
+	// need this function to convert the Channel response form crypt.Response to Response
+	go func(cr <-chan *crypt.Response, vr chan<- *RemoteResponse, quitwc <-chan bool, quit chan<- bool) {
 		for {
 			select {
 			case <-quitwc:
 				quit <- true
 				return
 			case resp := <-cr:
-				vr <- &viper.RemoteResponse{
+				vr <- &RemoteResponse{
 					Error: resp.Error,
 					Value: resp.Value,
 				}
@@ -72,7 +70,7 @@ func (rc remoteConfigProvider) WatchChannel(rp viper.RemoteProvider) (<-chan *vi
 	return viperResponsCh, quitwc
 }
 
-func getConfigManager(rp viper.RemoteProvider) (crypt.ConfigManager, error) {
+func getConfigManager(rp RemoteProvider) (crypt.ConfigManager, error) {
 	var cm crypt.ConfigManager
 	var err error
 
@@ -101,5 +99,5 @@ func getConfigManager(rp viper.RemoteProvider) (crypt.ConfigManager, error) {
 }
 
 func init() {
-	viper.RemoteConfig = &remoteConfigProvider{}
+	RemoteConfig = &remoteConfigProvider{}
 }
