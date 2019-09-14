@@ -34,7 +34,7 @@ func (c *Client) Get(key string) ([]byte, error) {
 }
 
 func (c *Client) GetWithContext(ctx context.Context, key string) ([]byte, error) {
-	resp, err := c.keysAPI.Get(ctx, key, nil)
+	resp, err := c.keysAPI.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *Client) List(key string) (backend.KVPairs, error) {
 }
 
 func (c *Client) ListWithContext(ctx context.Context, key string) (backend.KVPairs, error) {
-	resp, err := c.keysAPI.Get(ctx, key, nil)
+	resp, err := c.keysAPI.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (c *Client) Set(key string, value []byte) error {
 }
 
 func (c *Client) SetWithContext(ctx context.Context, key string, value []byte) error {
-	_, err := c.keysAPI.Put(ctx, key, string(value), nil)
+	_, err := c.keysAPI.Put(ctx, key, string(value))
 	return err
 }
 
@@ -89,7 +89,7 @@ func (c *Client) WatchWithContext(ctx context.Context, key string, stop chan boo
 			<-stop
 			cancel()
 		}()
-		watchRespChan := watcher.Watch(ctx, key, nil)
+		watchRespChan := watcher.Watch(ctx, key)
 		for watchResp := range watchRespChan {
 			for _, event := range watchResp.Events {
 				switch event.Type {
