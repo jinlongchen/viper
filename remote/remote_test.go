@@ -15,7 +15,7 @@ import (
 	"github.com/jinlongchen/viper"
 )
 
-func TestRemotePrecedence2(t *testing.T) {
+func TestRemote2(t *testing.T) {
 	v := viper.New()
 	v.SetConfigType("toml")
 	err := v.AddRemoteProvider("etcd", "http://192.168.2.42:2379", "/configs/a.toml")
@@ -30,7 +30,7 @@ func TestRemotePrecedence2(t *testing.T) {
 
 	err = v.WatchRemoteConfigOnChannel()
 	if err != nil {
-		log.Printf("WatchRemoteConfig err: %s\n",err.Error())
+		log.Printf("WatchRemoteConfig err: %s\n", err.Error())
 	}
 	log.Println("WatchRemoteConfig -----")
 	v.OnConfigChange(func(e fsnotify.Event) {
