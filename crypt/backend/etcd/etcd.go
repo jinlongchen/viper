@@ -5,27 +5,27 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/coreos/etcd/mvcc/mvccpb"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 
 	"github.com/jinlongchen/viper/crypt/backend"
 
-	goetcd "github.com/coreos/etcd/clientv3"
+	goEtcd "github.com/coreos/etcd/clientv3"
 )
 
 type Client struct {
-	client    *goetcd.Client
-	keysAPI   goetcd.KV
+	client    *goEtcd.Client
+	keysAPI   goEtcd.KV
 	waitIndex uint64
 }
 
 func New(machines []string) (*Client, error) {
-	newClient, err := goetcd.New(goetcd.Config{
+	newClient, err := goEtcd.New(goEtcd.Config{
 		Endpoints: machines,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("creating new etcd client for crypt.backend.Client: %v", err)
 	}
-	keysAPI := goetcd.NewKV(newClient)
+	keysAPI := goEtcd.NewKV(newClient)
 	return &Client{client: newClient, keysAPI: keysAPI, waitIndex: 0}, nil
 }
 
@@ -83,7 +83,7 @@ func (c *Client) Watch(key string, stop chan bool) <-chan *backend.Response {
 func (c *Client) WatchWithContext(ctx context.Context, key string, stop chan bool) <-chan *backend.Response {
 	respChan := make(chan *backend.Response, 0)
 	go func() {
-		watcher := goetcd.NewWatcher(c.client)
+		watcher := goEtcd.NewWatcher(c.client)
 		ctx, cancel := context.WithCancel(ctx)
 		go func() {
 			<-stop
