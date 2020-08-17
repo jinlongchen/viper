@@ -6,7 +6,6 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0
-	github.com/jinlongchen/golang-utilities v0.0.0-20190913054657-6d6cc71365f1
 	github.com/magiconair/properties v1.8.1
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/pelletier/go-toml v1.4.0
@@ -16,7 +15,6 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/stretchr/testify v1.3.0
 	github.com/subosito/gotenv v1.2.0
-	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	gopkg.in/yaml.v2 v2.2.2
 )

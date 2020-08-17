@@ -5,13 +5,12 @@
 package remote
 
 import (
+	"encoding/json"
 	"log"
 	"testing"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/jinlongchen/golang-utilities/json"
-
 	"github.com/jinlongchen/viper"
 )
 
@@ -26,7 +25,9 @@ func TestRemote2(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("config loaded: %s\n", string(json.ShouldMarshal(v.AllSettings())))
+
+	allSettingsData, _ := json.Marshal(v.AllSettings())
+	log.Printf("config loaded: %s\n", string(allSettingsData))
 
 	err = v.WatchRemoteConfigOnChannel()
 	if err != nil {
@@ -34,7 +35,8 @@ func TestRemote2(t *testing.T) {
 	}
 	log.Println("WatchRemoteConfig -----")
 	v.OnConfigChange(func(e fsnotify.Event) {
-		log.Printf("config reloaded: %s\n", string(json.ShouldMarshal(v.AllSettings())))
+		allSettingsData, _ := json.Marshal(v.AllSettings())
+		log.Printf("config reloaded: %s\n", string(allSettingsData))
 	})
 
 	ticker := time.NewTicker(time.Second * 10)
