@@ -4,12 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"go.etcd.io/etcd/mvcc/mvccpb"
-
 	"github.com/jinlongchen/viper/crypt/backend"
-
-	goEtcd "github.com/coreos/etcd/clientv3"
+	goEtcd "go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 )
 
 type Client struct {
