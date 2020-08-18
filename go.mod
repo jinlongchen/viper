@@ -6,7 +6,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/hashicorp/hcl v1.0.0
-	github.com/jinlongchen/crypt v0.0.0-20200818165202-ff1ea6e6083e
+	github.com/jinlongchen/crypt v0.0.0-20200818192929-83472223e4a2
 	github.com/magiconair/properties v1.8.1
 	github.com/mitchellh/mapstructure v1.3.3
 	github.com/pelletier/go-toml v1.8.0
@@ -17,9 +17,4 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/subosito/gotenv v1.2.0
 	gopkg.in/yaml.v2 v2.3.0
-)
-
-replace (
-	google.golang.org/grpc v1.31.0 => google.golang.org/grpc v1.26.0
-	github.com/jinlongchen/crypt v0.0.0-20200818165202-ff1ea6e6083e => ../crypt
 )
